@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema({
 	email: {
 		type: String,
 		require: true,
+		unique: true, // Đảm bảo email là duy nhất
 	},
 	password: {
 		type: String,
@@ -18,6 +19,18 @@ const UserSchema = new mongoose.Schema({
 	photoUrl: {
 		type: String,
 	},
+	isVerified: { 
+		type: Boolean, 
+		default: false 
+	},
+	verificationCode: { 
+		type: Number, 
+		default: null 
+	}, // Mã xác thực
+	verificationExpires: { 
+		type: Date, 
+		default: null 
+	}, // Thời gian hết hạn mã
 	createdAt: {
 		type: Date,
 		default: Date.now(),
