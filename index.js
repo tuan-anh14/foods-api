@@ -5,6 +5,7 @@ const authRouter = require('./src/routes/authRouter');
 const errorMiddleHandle = require('./src/middleware/errorMiddleware');
 const connectDB = require('./src/config/connectDb');
 const path = require('path');
+const restaurantRouter = require('./src/routes/restaurantRouter');
 const app = express();
 
 require('dotenv').config();
@@ -17,6 +18,7 @@ const PORT = process.env.PORT;
 app.use(errorMiddleHandle);
 
 app.use('/auth', authRouter);
+app.use('/restaurant', restaurantRouter);
 
 app.use('/images', express.static(path.join(__dirname, '/src/public/images')));
 
