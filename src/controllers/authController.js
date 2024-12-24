@@ -193,6 +193,7 @@ const login = asyncHandle(async (req, res) => {
                 email: existingUser.email,
                 fcmTokens: existingUser.fcmTokens ?? [],
                 photo: existingUser.photoUrl ?? '',
+                phone: existingUser.phone ?? '',
                 name: existingUser.name ?? '',
                 address: existingUser.address ?? '',
             },
@@ -254,6 +255,17 @@ const forgotPassword = asyncHandle(async (req, res) => {
         });  
     }  
 });
+
+const getAccount = (req, res) => {
+    const user = req.user;
+
+    res.status(200).json({
+        success: true,
+        message: 'User account retrieved successfully',
+        data: user, 
+    });
+};
+
 
 const handleLoginWithGoogle = asyncHandle(async (req, res) => {
 	const userInfo = req.body;
@@ -319,5 +331,6 @@ module.exports = {
 	login,
 	verification,
 	forgotPassword,
+    getAccount,
 	handleLoginWithGoogle,
 };
