@@ -188,60 +188,71 @@ const login = asyncHandle(async (req, res) => {
     res.status(200).json({
         message: 'Login successfully',
         data: {
-            id: existingUser.id,
-            email: existingUser.email,
+            user: {
+                id: existingUser.id,
+                email: existingUser.email,
+                fcmTokens: existingUser.fcmTokens ?? [],
+                photo: existingUser.photoUrl ?? '',
+                name: existingUser.name ?? '',
+                address: existingUser.address ?? '',
+            },
             accesstoken: await getJsonWebToken(email, existingUser.id),
-            fcmTokens: existingUser.fcmTokens ?? [],
-            photo: existingUser.photoUrl ?? '',
-            name: existingUser.name ?? '',
-        },
+        }
+        
     });
 });
 
 
+const forgotPassword = asyncHandle(async (req, res) => {  
+    const { email } = req.body;  
 
-const forgotPassword = asyncHandle(async (req, res) => {
-	const { email } = req.body;
+    const randomPassword = Math.round(100000 + Math.random() * 99000);  
 
-	const randomPassword = Math.round(100000 + Math.random() * 99000);
+    const data = {  
+        from: `"Mật khẩu mới" <${process.env.USERNAME_EMAIL}>`,  
+        to: email,  
+        subject: 'Mật khẩu mới',  
+        text: 'Mật khẩu mới của bạn: ',  
+        html: `<h1>${randomPassword}</h1>`,  
+    };  
 
-	const data = {
-		from: `"New Password" <${process.env.USERNAME_EMAIL}>`,
-		to: email,
-		subject: 'Verification email code',
-		text: 'Your code to verification email',
-		html: `<h1>${randomPassword}</h1>`,
-	};
+    const user = await UserModel.findOne({ email });  
+    if (user) {  
+        const salt = await bcrypt.genSalt(10);  
+        const hashedPassword = await bcrypt.hash(`${randomPassword}`, salt);  
 
-	const user = await UserModel.findOne({ email });
-	if (user) {
-		const salt = await bcryp.genSalt(10);
-		const hashedPassword = await bcryp.hash(`${randomPassword}`, salt);
+        await UserModel.findByIdAndUpdate(user._id, {  
+            password: hashedPassword,  
+            isChangePassword: true,  
+        })  
+            .then(() => {  
+                console.log('Đã hoàn thành');  
+            })  
+            .catch((error) => {  
+                console.log(error);  
+                return res.status(500).json({  
+                    message: 'Đã xảy ra lỗi khi cập nhật mật khẩu!',  
+                });  
+            });  
 
-		await UserModel.findByIdAndUpdate(user._id, {
-			password: hashedPassword,
-			isChangePassword: true,
-		})
-			.then(() => {
-				console.log('Done');
-			})
-			.catch((error) => console.log(error));
-
-		await handleSendMail(data)
-			.then(() => {
-				res.status(200).json({
-					message: 'Send email new password successfully!!!',
-					data: [],
-				});
-			})
-			.catch((error) => {
-				res.status(401);
-				throw new Error('Can not send email');
-			});
-	} else {
-		res.status(401);
-		throw new Error('User not found!!!');
-	}
+        await handleSendMail(data)  
+            .then(() => {  
+                res.status(200).json({  
+                    message: 'Gửi email mật khẩu mới thành công!!!',  
+                    data: [],  
+                });  
+            })  
+            .catch((error) => {  
+                console.log(error);  
+                res.status(500).json({  
+                    message: 'Không thể gửi email',  
+                });  
+            });  
+    } else {  
+        res.status(404).json({  
+            message: 'Không tìm thấy người dùng!!!',  
+        });  
+    }  
 });
 
 const handleLoginWithGoogle = asyncHandle(async (req, res) => {

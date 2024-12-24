@@ -1,6 +1,6 @@
 /** @format */
 
-const { default: mongoose, isValidObjectId, Schema } = require('mongoose');
+const { default: mongoose, Schema } = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
 	name: {
@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({
 	email: {
 		type: String,
 		require: true,
-		unique: true, // Đảm bảo email là duy nhất
+		unique: true,
 	},
 	password: {
 		type: String,
@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
 	},
 	photoUrl: {
 		type: String,
+		default: '',
 	},
 	isVerified: { 
 		type: Boolean, 
@@ -26,11 +27,11 @@ const UserSchema = new mongoose.Schema({
 	verificationCode: { 
 		type: Number, 
 		default: null 
-	}, // Mã xác thực
+	},
 	verificationExpires: { 
 		type: Date, 
 		default: null 
-	}, // Thời gian hết hạn mã
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now(),
@@ -41,6 +42,16 @@ const UserSchema = new mongoose.Schema({
 	},
 	fcmTokens: {
 		type: [String],
+	},
+	phone: {
+		type: String,
+		unique: true,
+		sparse: true,
+		default: '',
+	},
+	address: {
+		type: String,
+		default: '',
 	},
 });
 
