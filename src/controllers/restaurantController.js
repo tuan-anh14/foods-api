@@ -174,12 +174,57 @@ const getRestaurantById = async (req, res) => {
   }  
 };  
 
+// Tìm kiếm nhà hàng theo tên với phân trang
+const getRestaurantsByName = asyncHandler(async (req, res) => {
+  const { current = 1, pageSize = 10, name = "" } = req.query;
+
+  try {
+    // Chuyển đổi current và pageSize sang số nguyên
+    const currentPage = parseInt(current, 10);
+    const size = parseInt(pageSize, 10);
+
+    // Tạo regex tìm kiếm theo tên
+    const nameRegex = new RegExp(name, 'i');
+
+    // Tìm nhà hàng theo tên và phân trang
+    const restaurants = await Restaurant.find({ name: { $regex: nameRegex } })
+      .skip((currentPage - 1) * size)
+      .limit(size);
+
+    // Tổng số nhà hàng phù hợp
+    const total = await Restaurant.countDocuments({ name: { $regex: nameRegex } });
+
+    // Số trang tính toán
+    const pages = Math.ceil(total / size);
+
+    res.status(200).json({
+      data: {
+        meta: {
+          current: currentPage,
+          pageSize: size,
+          pages,
+          total,
+        },
+        results: restaurants,
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      statusCode: 500,
+      message: 'An error occurred while fetching restaurants',
+    });
+  }
+});
+
+
 module.exports = {
 	getRestaurants,
   topRatingRestaurants,
   newCommerRestaurants,
   topFreeshipRestaurants,
   fetchRestaurantById,
-  getRestaurantById
+  getRestaurantById,
+  getRestaurantsByName
     
 };
