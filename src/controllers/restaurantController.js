@@ -198,6 +198,8 @@ const getRestaurantsByName = asyncHandler(async (req, res) => {
     const pages = Math.ceil(total / size);
 
     res.status(200).json({
+      statusCode: 200,
+      message: 'Fetch restaurants',
       data: {
         meta: {
           current: currentPage,

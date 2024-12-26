@@ -1,6 +1,5 @@
-/** @format */
 
-const Router = require('express');
+const { Router } = require('express');
 const {
 	register,
 	login,

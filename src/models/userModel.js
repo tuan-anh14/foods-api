@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
 	},
 	photoUrl: {
 		type: String,
-		default: '',
+		default: 'default-user.png',
 	},
 	isVerified: { 
 		type: Boolean, 

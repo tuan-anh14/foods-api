@@ -8,6 +8,8 @@ const path = require('path');
 const restaurantRouter = require('./src/routes/restaurantRouter');
 const orderRouter = require('./src/routes/orderRouter');
 const userRouter = require('./src/routes/userRouter');
+const likeRouter = require('./src/routes/likeRouter');
+const notificationRouter = require('./src/routes/notificationRouter');
 const app = express();
 
 require('dotenv').config();
@@ -23,6 +25,9 @@ app.use('/auth', authRouter);
 app.use('/restaurant', restaurantRouter);
 app.use('/order', orderRouter);
 app.use('/user', userRouter);
+app.use('/like', likeRouter);
+app.use('/notification', notificationRouter);
+
 
 app.use('/images', express.static(path.join(__dirname, '/src/public/images')));
 
