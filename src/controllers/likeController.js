@@ -18,13 +18,13 @@ const likeRestaurant = asyncHandler(async (req, res) => {
         // Nếu số lượng bằng 0, xóa lượt thích
         if (existingLike.quantity + parseInt(quantity, 10) === 0) {
             await LikeModel.deleteOne({ _id: existingLike._id });
-            return res.status(200).json({ message: 'Removed like/dislike successfully' });
+            return res.status(200).json({statusCode: 200 });
         }
 
         // Cập nhật số lượng like/dislike
         existingLike.quantity += parseInt(quantity, 10);
         await existingLike.save();
-        return res.status(200).json({ message: 'Updated like/dislike successfully' });
+        return res.status(200).json({ statusCode: 200 });
     } else {
         // Nếu không có lượt thích trước đó, tạo mới
         if (parseInt(quantity, 10) !== 0) {
@@ -72,4 +72,29 @@ const getLikedRestaurants = async (req, res) => {
     }
   };
 
-module.exports = { likeRestaurant, getLikedRestaurants };
+  const deleteLike = asyncHandler(async (req, res) => {
+    const { restaurant } = req.body;
+
+    if (!restaurant) {
+        return res.status(400).json({ message: 'Missing required field: restaurant' });
+    }
+
+    const userId = req.user.id; // Lấy userId từ middleware xác thực
+
+    try {
+        // Xóa lượt thích của người dùng với nhà hàng cụ thể
+        const deleteResult = await LikeModel.deleteOne({ user: userId, restaurant });
+
+        if (deleteResult.deletedCount > 0) {
+            return res.status(200).json({ success: true, message: 'Like removed successfully' });
+        } else {
+            return res.status(404).json({ success: false, message: 'No like found to remove' });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Error removing like' });
+    }
+});
+
+
+module.exports = { likeRestaurant, getLikedRestaurants, deleteLike};
