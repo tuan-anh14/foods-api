@@ -185,6 +185,7 @@ const login = asyncHandle(async (req, res) => {
 
     await existingUser.save();
 
+
     res.status(200).json({
         message: 'Login successfully',
         data: {
@@ -256,16 +257,29 @@ const forgotPassword = asyncHandle(async (req, res) => {
     }  
 });
 
-const getAccount = (req, res) => {
-    const user = req.user;
+const getAccount = async (req, res) => {
+    const user = await UserModel.findOne({ email: req.user.email });  
+
+    if(!user) return res.status(404).json({
+        success: false,
+        message: 'User not found',
+    });
+
 
     res.status(200).json({
         success: true,
         message: 'User account retrieved successfully',
-        data: user, 
+        data: {
+                id: user.id,
+                email: user.email,
+                fcmTokens: user.fcmTokens ?? [],
+                photo: user.photoUrl ?? '',
+                phone: user.phone ?? '',
+                name: user.name ?? '',
+                address: user.address ?? '',
+        }
     });
 };
-
 
 const handleLoginWithGoogle = asyncHandle(async (req, res) => {
 	const userInfo = req.body;
@@ -325,6 +339,7 @@ const handleLoginWithGoogle = asyncHandle(async (req, res) => {
 		}
 	}
 });
+
 
 module.exports = {
 	register,

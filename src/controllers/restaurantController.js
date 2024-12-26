@@ -174,11 +174,6 @@ const getRestaurantById = async (req, res) => {
   }  
 };  
 
-module.exports = {  
-  getRestaurantById,  
-};
-
-
 module.exports = {
 	getRestaurants,
   topRatingRestaurants,

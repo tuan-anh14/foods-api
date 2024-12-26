@@ -6,6 +6,8 @@ const errorMiddleHandle = require('./src/middleware/errorMiddleware');
 const connectDB = require('./src/config/connectDb');
 const path = require('path');
 const restaurantRouter = require('./src/routes/restaurantRouter');
+const orderRouter = require('./src/routes/orderRouter');
+const userRouter = require('./src/routes/userRouter');
 const app = express();
 
 require('dotenv').config();
@@ -19,6 +21,8 @@ app.use(errorMiddleHandle);
 
 app.use('/auth', authRouter);
 app.use('/restaurant', restaurantRouter);
+app.use('/order', orderRouter);
+app.use('/user', userRouter);
 
 app.use('/images', express.static(path.join(__dirname, '/src/public/images')));
 
