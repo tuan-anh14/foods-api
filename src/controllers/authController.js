@@ -211,11 +211,11 @@ const forgotPassword = asyncHandle(async (req, res) => {
     const randomPassword = Math.round(100000 + Math.random() * 99000);  
 
     const data = {  
-        from: `"Mật khẩu mới" <${process.env.USERNAME_EMAIL}>`,  
+        from: `<${process.env.USERNAME_EMAIL}>`,  
         to: email,  
         subject: 'Mật khẩu mới',  
-        text: 'Mật khẩu mới của bạn: ',  
-        html: `<h1>${randomPassword}</h1>`,  
+        text: 'Mật khẩu mới của bạn là: ',  
+        html: `<h1>${randomPassword}</h1>. Vui lòng không chia sẻ với ai.`,  
     };  
 
     const user = await UserModel.findOne({ email });  
