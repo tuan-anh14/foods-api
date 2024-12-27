@@ -220,8 +220,8 @@ const forgotPassword = asyncHandle(async (req, res) => {
 
     const user = await UserModel.findOne({ email });  
     if (user) {  
-        const salt = await bcrypt.genSalt(10);  
-        const hashedPassword = await bcrypt.hash(`${randomPassword}`, salt);  
+        const salt = await bcryp.genSalt(10);  
+        const hashedPassword = await bcryp.hash(`${randomPassword}`, salt);  
 
         await UserModel.findByIdAndUpdate(user._id, {  
             password: hashedPassword,  
