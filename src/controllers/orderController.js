@@ -39,25 +39,68 @@ const placeAnOrder = asyncHandler(async (req, res) => {
 // API: Lấy tất cả đơn hàng của người dùng đã xác thực  
 
 //Trước cải tiến
+// const getAllOrders = asyncHandler(async (req, res) => {
+//   const userId = req.user.id;
+//   const start = Date.now(); // ⏱️ bắt đầu tính thời gian
+
+
+//   try {
+//     const orders = await Order.find({ user: userId })
+//       .populate('restaurant')
+//       .sort({ createdAt: -1 });
+
+
+//     const end = Date.now(); // ⏱️ kết thúc
+
+
+//     res.status(200).json({
+//       statusCode: 200,
+//       message: 'Đã lấy tất cả đơn hàng thành công',
+//       data: orders,
+//       duration: `${end - start}ms`, // trả thời gian thực hiện API
+//       timestamp: end,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       statusCode: 500,
+//       message: 'Lỗi nội bộ',
+//       timestamp: Date.now(),
+//     });
+//   }
+// });
+
+//Sau cải tiến
 const getAllOrders = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const start = Date.now(); // ⏱️ bắt đầu tính thời gian
+  const start = Date.now();
+
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
 
   try {
     const orders = await Order.find({ user: userId })
-      .populate('restaurant')
-      .sort({ createdAt: -1 });
+      .populate({
+        path: 'restaurant',
+        select: 'name address image', // chỉ lấy những gì cần dùng
+      })
+      .select('restaurant totalPrice totalQuantity createdAt') // tránh trả về detail nếu không cần
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
 
-    const end = Date.now(); // ⏱️ kết thúc
+    const end = Date.now();
 
 
     res.status(200).json({
       statusCode: 200,
       message: 'Đã lấy tất cả đơn hàng thành công',
       data: orders,
-      duration: `${end - start}ms`, // trả thời gian thực hiện API
+      duration: `${end - start}ms`,
       timestamp: end,
     });
   } catch (error) {
@@ -69,5 +112,8 @@ const getAllOrders = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+
 
 module.exports = { placeAnOrder, getAllOrders };
