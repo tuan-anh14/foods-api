@@ -37,29 +37,37 @@ const placeAnOrder = asyncHandler(async (req, res) => {
 });  
 
 // API: Lấy tất cả đơn hàng của người dùng đã xác thực  
-const getAllOrders = asyncHandler(async (req, res) => {  
-  const userId = req.user.id; // Lấy userId từ middleware xác thực  
 
-  try {  
-    // Lấy tất cả đơn hàng liên kết với user  
-    const orders = await Order.find({ user: userId }) // Lọc theo userId  
-      .populate('restaurant')   
-      .sort({ createdAt: -1 }); // Sắp xếp theo thời gian tạo giảm dần  
+//Trước cải tiến
+const getAllOrders = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const start = Date.now(); // ⏱️ bắt đầu tính thời gian
 
-    res.status(200).json({  
-      statusCode: 200,  
-      message: 'Đã lấy tất cả đơn hàng thành công',  
-      data: orders,  
-      timestamp: Date.now(),  
-    });  
-  } catch (error) {  
-    console.error(error);  
-    res.status(500).json({  
-      statusCode: 500,  
-      message: 'Lỗi nội bộ',  
-      timestamp: Date.now(),  
-    });  
-  }  
-});  
+
+  try {
+    const orders = await Order.find({ user: userId })
+      .populate('restaurant')
+      .sort({ createdAt: -1 });
+
+
+    const end = Date.now(); // ⏱️ kết thúc
+
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Đã lấy tất cả đơn hàng thành công',
+      data: orders,
+      duration: `${end - start}ms`, // trả thời gian thực hiện API
+      timestamp: end,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      statusCode: 500,
+      message: 'Lỗi nội bộ',
+      timestamp: Date.now(),
+    });
+  }
+});
 
 module.exports = { placeAnOrder, getAllOrders };
